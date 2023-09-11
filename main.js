@@ -80,3 +80,13 @@ function editLi(e) {
         EmailInput.value = email;
     }
 }
+
+window.addEventListener('DOMContentLoaded', () => {
+    axios.get('https://crudcrud.com/api/bf0d598366004c4a86aed24e0da3f86d/appointmentData').then(res => {
+        for (let i = 0; i < res.data.length; i++) {
+            showUser(res.data[i]);
+        }
+    }).catch(err => {
+        console.log(err);
+    })
+})
