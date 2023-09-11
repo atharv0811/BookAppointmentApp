@@ -28,13 +28,29 @@ btn.addEventListener('click', (e) => {
             name: NameInput.value, pno: PnoInput.value, email: EmailInput.value
         }
         let infoJson = JSON.stringify(info);
-        axios.post('https://crudcrud.com/api/bf0d598366004c4a86aed24e0da3f86d/appointmentData', infoJson, {
-            headers: {
-                'Content-Type': "application/json"
-            }
-        }).then(res => showUser(res.data)).catch(err => console.log(err));
+        let userid = btn.getAttribute("dataUserId");
 
-
+        if (userid) {
+            axios.put(`https://crudcrud.com/api/bf0d598366004c4a86aed24e0da3f86d/appointmentData/${userid}`, infoJson, {
+                headers: {
+                    'Content-Type': "application/json"
+                }
+            }).then(() => {
+                update(userid, infoJson);
+                NameInput.value = '';
+                PnoInput.value = '';
+                EmailInput.value = '';
+                btn.removeAttribute('dataUserId');
+                btn.value = 'Submit';
+            })
+        }
+        else {
+            axios.post('https://crudcrud.com/api/bf0d598366004c4a86aed24e0da3f86d/appointmentData', infoJson, {
+                headers: {
+                    'Content-Type': "application/json"
+                }
+            }).then(res => showUser(res.data)).catch(err => console.log(err));
+        }
     }
 });
 
@@ -72,14 +88,15 @@ function clearLi(e) {
 function editLi(e) {
     if (e.target.classList.contains('edit')) {
         let Parli = e.target.parentElement;
-        AppointmetList.removeChild(Parli);
+        let userid = Parli.getAttribute('userid');
         let name = Parli.textContent.split('|')[0].trim();
         let pno = Parli.textContent.split('|')[1].trim();
         let email = Parli.textContent.split('|')[2].trim();
-        localStorage.removeItem(name);
         NameInput.value = name;
         PnoInput.value = pno;
         EmailInput.value = email;
+        btn.setAttribute("dataUserId", userid);
+        btn.value = "Update";
     }
 }
 
@@ -92,3 +109,19 @@ window.addEventListener('DOMContentLoaded', () => {
         console.log(err);
     })
 })
+
+function update(userid, newData) {
+    let data = JSON.parse(newData);
+    let liToUpdate = document.querySelector(`li[userid="${userid}"]`);
+    if (liToUpdate) {
+        liToUpdate.textContent = `${data.name} | ${data.pno} | ${data.email}`;
+        var delbutton = document.createElement('button');
+        delbutton.className = "btn btn-danger btn-sm float-right m-0 delete w-25";
+        delbutton.appendChild(document.createTextNode("X"));
+        var Editbutton = document.createElement('button');
+        Editbutton.className = "btn mr-1 btn-info btn-sm float-right m-0 edit w-25";
+        Editbutton.appendChild(document.createTextNode("Edit"));
+        liToUpdate.appendChild(delbutton);
+        liToUpdate.appendChild(Editbutton);
+    }
+}
