@@ -28,23 +28,32 @@ btn.addEventListener('click', (e) => {
             name: NameInput.value, pno: PnoInput.value, email: EmailInput.value
         }
         let infoJson = JSON.stringify(info);
-        localStorage.setItem(NameInput.value, infoJson);
-        let inforparsed = JSON.parse(localStorage.getItem(NameInput.value));
-        let li = document.createElement('li');
-        li.className = "list-group-item";
-        var delbutton = document.createElement('button');
-        delbutton.className = "btn btn-danger btn-sm float-right m-0 delete w-25";
-        delbutton.appendChild(document.createTextNode("X"));
-        var Editbutton = document.createElement('button');
-        Editbutton.className = "btn mr-1 btn-info btn-sm float-right m-0 edit w-25";
-        Editbutton.appendChild(document.createTextNode("Edit"));
-        li.appendChild(document.createTextNode(inforparsed.name + " " + "|" + " " + inforparsed.pno + " " + "|" + " " + inforparsed.email + " " + "|" + " "));
-        li.appendChild(delbutton);
-        li.appendChild(Editbutton);
-        AppointmetList.appendChild(li);
-        console.log("success");
+        axios.post('https://crudcrud.com/api/bf0d598366004c4a86aed24e0da3f86d/appointmentData', infoJson, {
+            headers: {
+                'Content-Type': "application/json"
+            }
+        }).then(res => showUser(res.data)).catch(err => console.log(err));
+
+
     }
 });
+
+function showUser(data) {
+    let inforparsed = data;
+    let li = document.createElement('li');
+    li.className = "list-group-item";
+    var delbutton = document.createElement('button');
+    delbutton.className = "btn btn-danger btn-sm float-right m-0 delete w-25";
+    delbutton.appendChild(document.createTextNode("X"));
+    var Editbutton = document.createElement('button');
+    Editbutton.className = "btn mr-1 btn-info btn-sm float-right m-0 edit w-25";
+    Editbutton.appendChild(document.createTextNode("Edit"));
+    li.appendChild(document.createTextNode(inforparsed.name + " " + "|" + " " + inforparsed.pno + " " + "|" + " " + inforparsed.email + " " + "|" + " "));
+    li.appendChild(delbutton);
+    li.appendChild(Editbutton);
+    AppointmetList.appendChild(li);
+    console.log("success");
+}
 
 AppointmetList.addEventListener('click', clearLi);
 AppointmetList.addEventListener('click', editLi);
