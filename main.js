@@ -42,6 +42,7 @@ function showUser(data) {
     let inforparsed = data;
     let li = document.createElement('li');
     li.className = "list-group-item";
+    li.setAttribute("userid", inforparsed._id);
     var delbutton = document.createElement('button');
     delbutton.className = "btn btn-danger btn-sm float-right m-0 delete w-25";
     delbutton.appendChild(document.createTextNode("X"));
@@ -61,9 +62,10 @@ function clearLi(e) {
     if (e.target.classList.contains('delete')) {
         if (confirm('Are you sure?')) {
             let Parli = e.target.parentElement;
-            AppointmetList.removeChild(Parli);
-            let nameToDelete = Parli.textContent.split('|')[0].trim();
-            localStorage.removeItem(nameToDelete);
+            let userid = Parli.getAttribute("userid");
+            axios.delete(`https://crudcrud.com/api/bf0d598366004c4a86aed24e0da3f86d/appointmentData/${userid}`).then(() => {
+                AppointmetList.removeChild(Parli);
+            }).catch(err => console.log(err));
         }
     }
 }
